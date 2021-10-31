@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>aggregate_implementation_patterns_csharp</RootNamespace>
+    </PropertyGroup>
+
+</Project>
