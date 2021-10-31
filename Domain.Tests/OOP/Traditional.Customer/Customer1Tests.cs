@@ -76,7 +76,7 @@ namespace Domain.Tests.OOP.Traditional.Customer
         }
 
         [Fact]
-        public void changeEmailAddress()
+        public void ChangeEmailAddress()
         {
             // Given
             GivenARegisteredCustomer();
