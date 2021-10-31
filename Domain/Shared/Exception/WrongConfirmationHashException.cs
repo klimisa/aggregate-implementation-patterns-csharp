@@ -4,7 +4,7 @@ namespace Domain.Shared.Exception
 
     public class WrongConfirmationHashException: Exception
     {
-        public WrongConfirmationHashException(): base("confirmation hash does not match")
+        public WrongConfirmationHashException(): base("Confirmation hash does not match")
         {
             
         }

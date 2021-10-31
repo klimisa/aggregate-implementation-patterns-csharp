@@ -130,7 +130,7 @@ namespace Domain.Tests.OOP.Traditional.Customer
             }
             catch (WrongConfirmationHashException e)
             {
-                throw new Exception("unexpected error in givenEmailAddressWasConfirmed: " + e.Message);
+                throw new Exception("Unexpected error in GivenEmailAddressWasConfirmed: " + e.Message);
             }
         }
 
