@@ -6,7 +6,6 @@
 
     <ItemGroup>
       <Folder Include="Functional" />
-      <Folder Include="OOP" />
     </ItemGroup>
 
 </Project>

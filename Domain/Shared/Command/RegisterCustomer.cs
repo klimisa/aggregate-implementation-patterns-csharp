@@ -3,7 +3,7 @@ namespace Domain.Shared.Command
     public class RegisterCustomer
     {
         public ID CustomerId { get; }
-        public string EmailAddress { get; }
+        public EmailAddress EmailAddress { get; }
         public Hash ConfirmationHash { get; }
         public PersonName Name { get; }
 
@@ -11,7 +11,7 @@ namespace Domain.Shared.Command
         {
             CustomerId = ID.Generate();
             ConfirmationHash = Hash.Generate();
-            EmailAddress = emailAddress;
+            EmailAddress = EmailAddress.Build(emailAddress);
             Name = PersonName.Build(givenName, familyName);
         }
 
