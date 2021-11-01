@@ -9,8 +9,8 @@ namespace Domain.OOP.Traditional.Customer
         public ID Id { get; }
         public EmailAddress EmailAddress { get; private set; }
         public Hash ConfirmationHash { get; private set; }
-        public PersonName Name { get; }
         public bool IsEmailAddressConfirmed { get; private set; }
+        public PersonName Name { get; }
 
         private Customer1(ID id, EmailAddress emailAddress, Hash confirmationHash, PersonName name)
         {

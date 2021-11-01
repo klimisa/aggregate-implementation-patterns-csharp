@@ -2,6 +2,7 @@ namespace Domain.Tests.OOP.Traditional.Customer
 {
     using System;
     using Domain.OOP.Traditional.Customer;
+    using FluentAssertions;
     using Shared;
     using Shared.Command;
     using Shared.Exception;
@@ -28,7 +29,7 @@ namespace Domain.Tests.OOP.Traditional.Customer
         }
 
         [Fact]
-        public void RegisterCustomer1()
+        void RegisterCustomer1()
         {
             // When
             var command = RegisterCustomer.Build(emailAddress.Value, name.GivenName, name.FamilyName);
@@ -36,16 +37,16 @@ namespace Domain.Tests.OOP.Traditional.Customer
 
             // Then it should succeed
             // and should have the expected state
-            Assert.NotNull(customer);
-            Assert.Equal(customer.Id, command.CustomerId);
-            Assert.Equal(customer.Name, command.Name);
-            Assert.Equal(customer.EmailAddress, command.EmailAddress);
-            Assert.Equal(customer.ConfirmationHash, command.ConfirmationHash);
-            Assert.False(customer.IsEmailAddressConfirmed);
+            customer.Should().NotBeNull();
+            customer.Id.Should().Be(command.CustomerId);
+            customer.Name.Should().Be( command.Name);
+            customer.EmailAddress.Should().Be( command.EmailAddress);
+            customer.ConfirmationHash.Should().Be( command.ConfirmationHash);
+            customer.IsEmailAddressConfirmed.Should().BeFalse();
         }
 
         [Fact]
-        public void Confirm_EmailAddress()
+        void Confirm_EmailAddress()
         {
             // Given
             GivenARegisteredCustomer();
@@ -53,15 +54,15 @@ namespace Domain.Tests.OOP.Traditional.Customer
             // When ConfirmCustomerEmailAddress
             // Then it should succeed
             var command = ConfirmCustomerEmailAddress.Build(customerId.Value, confirmationHash.Value);
-            var exception = Record.Exception(() => registeredCustomer.ConfirmEmailAddress(command));
-            Assert.Null(exception);
+            Action act = () => registeredCustomer.ConfirmEmailAddress(command);
+            act.Should().NotThrow();
 
             // and the emailAddress should be confirmed
             Assert.True(registeredCustomer.IsEmailAddressConfirmed);
         }
 
         [Fact]
-        public void ConfirmEmailAddress_WithWrongConfirmationHash()
+        void ConfirmEmailAddress_WithWrongConfirmationHash()
         {
             // Given
             GivenARegisteredCustomer();
@@ -69,14 +70,15 @@ namespace Domain.Tests.OOP.Traditional.Customer
             // When ConfirmCustomerEmailAddress
             // Then it should throw WrongConfirmationHashException
             var command = ConfirmCustomerEmailAddress.Build(customerId.Value, wrongConfirmationHash.Value);
-            Assert.Throws<WrongConfirmationHashException>(() => registeredCustomer.ConfirmEmailAddress(command));
+            Action act = () => registeredCustomer.ConfirmEmailAddress(command);
+            act.Should().Throw<WrongConfirmationHashException>();
 
             // and the emailAddress should not be confirmed
-            Assert.False(registeredCustomer.IsEmailAddressConfirmed);
+            registeredCustomer.IsEmailAddressConfirmed.Should().BeFalse();
         }
 
         [Fact]
-        public void ChangeEmailAddress()
+        void ChangeEmailAddress()
         {
             // Given
             GivenARegisteredCustomer();
@@ -86,13 +88,13 @@ namespace Domain.Tests.OOP.Traditional.Customer
             registeredCustomer.ChangeEmailAddress(command);
 
             // Then the emailAddress and confirmationHash should be changed and the emailAddress should be unconfirmed
-            Assert.Equal(registeredCustomer.EmailAddress, command.EmailAddress);
-            Assert.Equal(registeredCustomer.ConfirmationHash, command.ConfirmationHash);
-            Assert.False(registeredCustomer.IsEmailAddressConfirmed);
+            registeredCustomer.EmailAddress.Should().Be( command.EmailAddress);
+            registeredCustomer.ConfirmationHash.Should().Be( command.ConfirmationHash);
+            registeredCustomer.IsEmailAddressConfirmed.Should().BeFalse();
         }
 
         [Fact]
-        public void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged()
+        void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged()
         {
             // Given
             GivenARegisteredCustomer();
@@ -102,11 +104,11 @@ namespace Domain.Tests.OOP.Traditional.Customer
             // When confirmCustomerEmailAddress
             // Then it should succeed
             var command = ConfirmCustomerEmailAddress.Build(customerId.Value, changedConfirmationHash.Value);
-            var exception = Record.Exception(() => registeredCustomer.ConfirmEmailAddress(command));
-            Assert.Null(exception);
+            Action act = () => registeredCustomer.ConfirmEmailAddress(command);
+            act.Should().NotThrow();
 
             // and the emailAddress should be confirmed
-            Assert.True(registeredCustomer.IsEmailAddressConfirmed);
+            registeredCustomer.IsEmailAddressConfirmed.Should().BeTrue();
         }
 
         /*
