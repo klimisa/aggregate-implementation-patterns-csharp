@@ -3,18 +3,30 @@ namespace Domain.OOP.ES.Customer
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Shared;
     using Shared.Command;
     using Shared.Event;
+    using Shared.Exception;
 
     public class Customer3
     {
+        private EmailAddress emailAddress;
+        private Hash confirmationHash;
+        private bool isEmailAddressConfirmed;
+        private PersonName name;
+
         private Customer3()
         {
         }
 
         public static CustomerRegistered Register(RegisterCustomer command)
         {
-            return null; // TODO
+            return CustomerRegistered.Build(
+                command.CustomerId,
+                command.EmailAddress,
+                command.ConfirmationHash,
+                command.Name
+            );
         }
 
         public static Customer3 Reconstitute(List<Event> events)
@@ -28,16 +40,35 @@ namespace Domain.OOP.ES.Customer
 
         public List<Event> ConfirmEmailAddress(ConfirmCustomerEmailAddress command)
         {
-            // TODO
+            if (command.ConfirmationHash != confirmationHash)
+            {
+                return new List<Event>()
+                {
+                    CustomerEmailAddressConfirmationFailed.Build(command.CustomerId)
+                };
+            }
 
-            return new List<Event>(); // TODO
+            if (isEmailAddressConfirmed)
+                return new List<Event>();
+
+            return new List<Event>
+            {
+                CustomerEmailAddressConfirmed.Build(command.CustomerId)
+            };
         }
 
         public List<Event> ChangeEmailAddress(ChangeCustomerEmailAddress command)
         {
-            // TODO
+            if (command.EmailAddress == emailAddress)
+                return new List<Event>();
 
-            return new List<Event>(); // TODO
+            return new List<Event>()
+            {
+                CustomerEmailAddressChanged.Build(
+                    command.CustomerId, 
+                    command.EmailAddress, 
+                    command.ConfirmationHash)
+            };
         }
 
         private void Apply(List<Event> events)
@@ -53,13 +84,17 @@ namespace Domain.OOP.ES.Customer
             switch (evt)
             {
                 case CustomerRegistered e:
-                    // TODO
+                    name = e.Name;
+                    emailAddress = e.EmailAddress;
+                    confirmationHash = e.ConfirmationHash;
                     break;
                 case CustomerEmailAddressConfirmed e:
-                    // TODO
+                    isEmailAddressConfirmed = true;
                     break;
                 case CustomerEmailAddressChanged e:
-                    // TODO
+                    emailAddress = e.EmailAddress;
+                    confirmationHash = e.ConfirmationHash;
+                    isEmailAddressConfirmed = false;
                     break;
             }
         }
