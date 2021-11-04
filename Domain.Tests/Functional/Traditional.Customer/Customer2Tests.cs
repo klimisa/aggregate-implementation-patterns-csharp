@@ -92,7 +92,8 @@ namespace Domain.Tests.Functional.Traditional.Customer
         }
 
         [Fact]
-        void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged() {
+        void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged()
+        {
             // Given
             GivenARegisteredCustomer();
             GivenEmailAddressWasConfirmed();
@@ -107,9 +108,8 @@ namespace Domain.Tests.Functional.Traditional.Customer
 
             // and the emailAddress of the changed Customer should be confirmed
             changedCustomer.IsEmailAddressConfirmed.Should().BeTrue();
-
         }
-        
+
         /**
          * Helper methods to set up the Given state
          */
