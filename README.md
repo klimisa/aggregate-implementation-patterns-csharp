@@ -84,7 +84,9 @@ For each *CustomerX*:
 The production code is **missing relevant pieces of code** which you will have to fill to make
 the tests green. There are **TODO** comments which mark where code is missing. You don't have to modify test cases,
 and you don't have to modify the existing code to complete the tasks.
+
 Please always make the first failing test green!
+
 
 ## Setup
 The repository contains a *Gradle* build file to set up the dependencies (Junit 5.7).
