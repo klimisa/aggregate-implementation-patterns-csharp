@@ -15,12 +15,7 @@ namespace Domain.Shared.Event
             Name = name;
         }
 
-        public static CustomerRegistered Build(
-            ID id,
-            EmailAddress emailAddress,
-            Hash confirmationHash,
-            PersonName name
-        )
+        public static CustomerRegistered Build(ID id, EmailAddress emailAddress, Hash confirmationHash, PersonName name)
         {
             return new CustomerRegistered(id, emailAddress, confirmationHash, name);
         }
