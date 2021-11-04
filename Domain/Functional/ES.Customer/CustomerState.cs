@@ -6,10 +6,11 @@ namespace Domain.Functional.ES.Customer
 
     public class CustomerState
     {
-        EmailAddress emailAddress;
-        Hash confirmationHash;
-        PersonName name;
-        bool isEmailAddressConfirmed;
+        public EmailAddress EmailAddress { get; private set; }
+        public Hash ConfirmationHash { get; private set; }
+        public PersonName Name { get; private set; }
+
+        public bool IsEmailAddressConfirmed { get; private set; }
 
         private CustomerState()
         {
