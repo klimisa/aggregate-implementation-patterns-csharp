@@ -36,7 +36,7 @@ namespace Domain.Tests.Functional.ES.Customer
         }
 
         [Fact]
-        void RegisterCustome5r()
+        void RegisterCustomer5()
         {
             WHEN_RegisterCustomer();
             THEN_CustomerRegistered();
