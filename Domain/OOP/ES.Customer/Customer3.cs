@@ -3,11 +3,17 @@ namespace Domain.OOP.ES.Customer
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Shared;
     using Shared.Command;
     using Shared.Event;
 
     public class Customer3
     {
+        private EmailAddress emailAddress;
+        private Hash confirmationHash;
+        private bool isEmailAddressConfirmed;
+        private PersonName name;
+        
         private Customer3()
         {
         }

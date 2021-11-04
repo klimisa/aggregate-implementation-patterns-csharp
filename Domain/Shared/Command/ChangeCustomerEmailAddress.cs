@@ -2,13 +2,13 @@ namespace Domain.Shared.Command
 {
     public class ChangeCustomerEmailAddress
     {
-        public ID CustomerID { get; }
+        public ID CustomerId { get; }
         public EmailAddress EmailAddress { get; }
         public Hash ConfirmationHash { get; }
 
         private ChangeCustomerEmailAddress(string customerId, string emailAddress)
         {
-            CustomerID = ID.Build(customerId);
+            CustomerId = ID.Build(customerId);
             EmailAddress = EmailAddress.Build(emailAddress);
             ConfirmationHash = Hash.Generate();
         }
