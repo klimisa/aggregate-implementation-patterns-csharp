@@ -77,8 +77,7 @@ namespace Domain.OOP.ES.Customer
             }
         }
 
-        // TODO: Discuss it, cause Apply() it shouldn't be public
-        public void Apply(Event evt)
+        private void Apply(Event evt)
         {
             switch (evt)
             {

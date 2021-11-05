@@ -1,12 +1,9 @@
 namespace Domain.OOP.ES.Customer
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Shared;
     using Shared.Command;
     using Shared.Event;
-    using Shared.Exception;
 
     public class Customer3
     {
@@ -79,7 +76,7 @@ namespace Domain.OOP.ES.Customer
             }
         }
 
-        public void Apply(Event evt)
+        private void Apply(Event evt)
         {
             switch (evt)
             {
