@@ -25,8 +25,7 @@ namespace Domain.Functional.ES.Customer
             return customer;
         }
 
-        // TODO: This shouldn't be public
-        public void Apply(List<Event> events)
+        private void Apply(List<Event> events)
         {
             foreach (var evt in events)
             {

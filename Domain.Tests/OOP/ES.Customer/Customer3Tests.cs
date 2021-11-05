@@ -2,6 +2,7 @@ namespace Domain.Tests.OOP.ES.Customer
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Domain.OOP.ES.Customer;
     using FluentAssertions;
     using Shared;
@@ -43,7 +44,7 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress()
         {
-            GIVEN_CustomerRegistered();
+            GIVEN(CustomerIsRegistered());
             WHEN_ConfirmEmailAddress_With(confirmationHash);
             THEN_EmailAddressConfirmed();
         }
@@ -51,75 +52,77 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress_WithWrongConfirmationHash()
         {
-            GIVEN_CustomerRegistered();
+            GIVEN(CustomerIsRegistered());
             WHEN_ConfirmEmailAddress_With(wrongConfirmationHash);
             THEN_EmailAddressConfirmationFailed();
         }
-        
+
         [Fact]
-        void ConfirmEmailAddress_WhenItWasAlreadyConfirmed() {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasConfirmed();
+        void ConfirmEmailAddress_WhenItWasAlreadyConfirmed()
+        {
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasConfirmed());
             WHEN_ConfirmEmailAddress_With(confirmationHash);
             THEN_NothingShouldHappen();
         }
-        
+
         [Fact]
-        void ChangeEmailAddress() {
-            GIVEN_CustomerRegistered();
+        void ChangeEmailAddress()
+        {
+            GIVEN(CustomerIsRegistered());
             WHEN_ChangeEmailAddress_With(changedEmailAddress);
             THEN_EmailAddressChanged();
         }
-        
+
         [Fact]
-        void ChangeEmailAddress_WithUnchangedEmailAddress() {
-            GIVEN_CustomerRegistered();
+        void ChangeEmailAddress_WithUnchangedEmailAddress()
+        {
+            GIVEN(CustomerIsRegistered());
             WHEN_ChangeEmailAddress_With(emailAddress);
             THEN_NothingShouldHappen();
         }
-        
+
         [Fact]
-        void ChangeEmailAddress_WhenItWasAlreadyChanged() {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasChanged();
+        void ChangeEmailAddress_WhenItWasAlreadyChanged()
+        {
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasChanged());
             WHEN_ChangeEmailAddress_With(changedEmailAddress);
             THEN_NothingShouldHappen();
         }
-        
+
         [Fact]
-        void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged() {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasConfirmed();
-            __and_EmailAddressWasChanged();
+        void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged()
+        {
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasConfirmed(),
+                __and_EmailAddressWasChanged());
             WHEN_ConfirmEmailAddress_With(changedConfirmationHash);
             THEN_EmailAddressConfirmed();
         }
-        
+
         /*
          * Methods for GIVEN
          */
 
-        private void GIVEN_CustomerRegistered()
+        private void GIVEN(params Event[] events)
         {
-            registeredCustomer = Customer3.Reconstitute(
-                new List<Event>
-                {
-                    CustomerRegistered.Build(customerId, emailAddress, confirmationHash, name)
-                }
-            );
+            registeredCustomer = Customer3.Reconstitute(events.ToList());
         }
-        
-        private void __and_EmailAddressWasConfirmed() {
-            // TODO: Discuss it, cause Apply() it shouldn't be public
-            registeredCustomer.Apply(
-                CustomerEmailAddressConfirmed.Build(customerId)
-            );
+
+        private CustomerRegistered CustomerIsRegistered()
+        {
+            return CustomerRegistered.Build(customerId, emailAddress, confirmationHash, name);
         }
-        
-        private void __and_EmailAddressWasChanged() {
-            registeredCustomer.Apply(
-                CustomerEmailAddressChanged.Build(customerId, changedEmailAddress, changedConfirmationHash)
-            );
+
+        private CustomerEmailAddressConfirmed __and_EmailAddressWasConfirmed()
+        {
+            return CustomerEmailAddressConfirmed.Build(customerId);
+        }
+
+        private CustomerEmailAddressChanged __and_EmailAddressWasChanged()
+        {
+            return CustomerEmailAddressChanged.Build(customerId, changedEmailAddress, changedConfirmationHash);
         }
 
         /*
@@ -147,18 +150,19 @@ namespace Domain.Tests.OOP.ES.Customer
             }
         }
 
-        private void WHEN_ChangeEmailAddress_With(EmailAddress emailAddress) {
+        private void WHEN_ChangeEmailAddress_With(EmailAddress emailAddress)
+        {
             var command = ChangeCustomerEmailAddress.Build(customerId.Value, emailAddress.Value);
-            try 
+            try
             {
                 recordedEvents = registeredCustomer.ChangeEmailAddress(command);
-            } 
-            catch 
+            }
+            catch
             {
                 throw new Exception(THelper.PropertyIsNull("EmailAddress"));
             }
         }
-        
+
         /*
          * Methods for THEN
          */
@@ -184,7 +188,8 @@ namespace Domain.Tests.OOP.ES.Customer
             customerId.Should().Be(evt?.CustomerId, THelper.PropertyIsWrong(method, "CustomerId"));
         }
 
-        private void THEN_EmailAddressConfirmationFailed() {
+        private void THEN_EmailAddressConfirmationFailed()
+        {
             var method = "ConfirmEmailAddress";
             var eventName = "CustomerEmailAddressConfirmationFailed";
             recordedEvents.Should().HaveCount(1, THelper.NoEventWasRecorded(method, eventName));
@@ -193,8 +198,9 @@ namespace Domain.Tests.OOP.ES.Customer
             evt.Should().BeOfType<CustomerEmailAddressConfirmationFailed>(THelper.EventOfWrongTypeWasRecorded(method));
             customerId.Should().Be(evt?.CustomerId, THelper.PropertyIsWrong(method, "CustomerId"));
         }
-        
-        private void THEN_EmailAddressChanged() {
+
+        private void THEN_EmailAddressChanged()
+        {
             var method = "ChangeEmailAddress";
             var eventName = "CustomerEmailAddressChanged";
             recordedEvents.Should().HaveCount(1, THelper.NoEventWasRecorded(method, eventName));
@@ -204,8 +210,9 @@ namespace Domain.Tests.OOP.ES.Customer
             customerId.Should().Be(evt?.CustomerId, THelper.PropertyIsWrong(method, "CustomerId"));
             changedEmailAddress.Should().Be(evt?.EmailAddress, THelper.PropertyIsWrong(method, "EmailAddress"));
         }
-        
-        private void THEN_NothingShouldHappen() {
+
+        private void THEN_NothingShouldHappen()
+        {
             recordedEvents.Should().HaveCount(0, THelper.NoEventShouldHaveBeenRecorded(THelper.TypeOfFirst(recordedEvents)));
         }
     }

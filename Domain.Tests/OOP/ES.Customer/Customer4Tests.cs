@@ -1,7 +1,7 @@
 namespace Domain.Tests.OOP.ES.Customer
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using Domain.OOP.ES.Customer;
     using FluentAssertions;
     using Shared;
@@ -41,7 +41,7 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress()
         {
-            GIVEN_CustomerRegistered();
+            GIVEN(CustomerIsRegistered());
             WHEN_ConfirmEmailAddress_With(confirmationHash);
             THEN_EmailAddressConfirmed();
         }
@@ -49,7 +49,7 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress_WithWrongConfirmationHash()
         {
-            GIVEN_CustomerRegistered();
+            GIVEN(CustomerIsRegistered());
             WHEN_ConfirmEmailAddress_With(wrongConfirmationHash);
             THEN_EmailAddressConfirmationFailed();
         }
@@ -57,8 +57,8 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress_WhenItWasAlreadyConfirmed()
         {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasConfirmed();
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasConfirmed());
             WHEN_ConfirmEmailAddress_With(confirmationHash);
             THEN_NothingShouldHappen();
         }
@@ -66,8 +66,8 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress_WithWrongConfirmationHash_whenItWasAlreadyConfirmed()
         {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasConfirmed();
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasConfirmed());
             WHEN_ConfirmEmailAddress_With(wrongConfirmationHash);
             THEN_EmailAddressConfirmationFailed();
         }
@@ -76,7 +76,7 @@ namespace Domain.Tests.OOP.ES.Customer
         void ChangeEmailAddress()
         {
             // Given
-            GIVEN_CustomerRegistered();
+            GIVEN(CustomerIsRegistered());
             WHEN_ChangeEmailAddress_With(changedEmailAddress);
             THEN_EmailAddressChanged();
         }
@@ -84,7 +84,7 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ChangeEmailAddress_WithUnchangedEmailAddress()
         {
-            GIVEN_CustomerRegistered();
+            GIVEN(CustomerIsRegistered());
             WHEN_ChangeEmailAddress_With(emailAddress);
             THEN_NothingShouldHappen();
         }
@@ -92,8 +92,8 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ChangeEmailAddress_WhenItWasAlreadyChanged()
         {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasChanged();
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasChanged());
             WHEN_ChangeEmailAddress_With(changedEmailAddress);
             THEN_NothingShouldHappen();
         }
@@ -101,9 +101,9 @@ namespace Domain.Tests.OOP.ES.Customer
         [Fact]
         void ConfirmEmailAddress_WhenItWasPreviouslyConfirmedAndThenChanged()
         {
-            GIVEN_CustomerRegistered();
-            __and_EmailAddressWasConfirmed();
-            __and_EmailAddressWasChanged();
+            GIVEN(CustomerIsRegistered(),
+                __and_EmailAddressWasConfirmed(),
+                __and_EmailAddressWasChanged());
             WHEN_ConfirmEmailAddress_With(changedConfirmationHash);
             THEN_EmailAddressConfirmed();
         }
@@ -111,29 +111,24 @@ namespace Domain.Tests.OOP.ES.Customer
         /*
          * Methods for GIVEN
          */
-        private void GIVEN_CustomerRegistered()
+        private void GIVEN(params Event[] events)
         {
-            registeredCustomer = Customer4.Reconstitute(
-                new List<Event>
-                {
-                    CustomerRegistered.Build(customerId, emailAddress, confirmationHash, name)
-                }
-            );
+            registeredCustomer = Customer4.Reconstitute(events.ToList());
         }
 
-        private void __and_EmailAddressWasConfirmed()
+        private CustomerRegistered CustomerIsRegistered()
         {
-            // TODO: Discuss it, cause Apply() it shouldn't be public
-            registeredCustomer.Apply(
-                CustomerEmailAddressConfirmed.Build(customerId)
-            );
+            return CustomerRegistered.Build(customerId, emailAddress, confirmationHash, name);
         }
 
-        private void __and_EmailAddressWasChanged()
+        private CustomerEmailAddressConfirmed __and_EmailAddressWasConfirmed()
         {
-            registeredCustomer.Apply(
-                CustomerEmailAddressChanged.Build(customerId, changedEmailAddress, changedConfirmationHash)
-            );
+            return CustomerEmailAddressConfirmed.Build(customerId);
+        }
+
+        private CustomerEmailAddressChanged __and_EmailAddressWasChanged()
+        {
+            return CustomerEmailAddressChanged.Build(customerId, changedEmailAddress, changedConfirmationHash);
         }
 
         /*

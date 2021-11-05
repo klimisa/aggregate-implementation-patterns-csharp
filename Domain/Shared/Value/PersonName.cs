@@ -1,7 +1,5 @@
 ﻿namespace Domain.Shared
 {
-    using System;
-
     public record PersonName
     {
         public string GivenName { get; }
