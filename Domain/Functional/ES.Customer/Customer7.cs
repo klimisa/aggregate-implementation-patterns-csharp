@@ -8,21 +8,45 @@ namespace Domain.Functional.ES.Customer
     {
         public static CustomerRegistered Register(RegisterCustomer command)
         {
-            return null; // TODO
+            return CustomerRegistered.Build(
+                command.CustomerId,
+                command.EmailAddress,
+                command.ConfirmationHash,
+                command.Name
+            );
         }
 
         public static List<Event> ConfirmEmailAddress(CustomerState current, ConfirmCustomerEmailAddress command)
         {
-            // TODO
+            if (command.ConfirmationHash != current.ConfirmationHash)
+            {
+                return new List<Event>()
+                {
+                    CustomerEmailAddressConfirmationFailed.Build(command.CustomerId)
+                };
+            }
 
-            return new List<Event>(); // TODO
+            if (current.IsEmailAddressConfirmed)
+                return new List<Event>();
+
+            return new List<Event>
+            {
+                CustomerEmailAddressConfirmed.Build(command.CustomerId)
+            };
         }
 
         public static List<Event> ChangeEmailAddress(CustomerState current, ChangeCustomerEmailAddress command)
         {
-            // TODO
+            if (command.EmailAddress == current.EmailAddress)
+                return new List<Event>();
 
-            return new List<Event>(); // TODO
+            return new List<Event>()
+            {
+                CustomerEmailAddressChanged.Build(
+                    command.CustomerId,
+                    command.EmailAddress,
+                    command.ConfirmationHash)
+            };
         }
     }
 }

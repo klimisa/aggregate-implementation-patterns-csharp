@@ -2,14 +2,14 @@
 There are a lot of different possibilities when implementing an aggregate. Many of them are not generally better than
 others, hence it's crucial to take the use case into account when deciding for one model. We want to have a look at a few
 different patterns together and discuss their pros and cons. In the end, you should have more options to choose from for
-your next project. 
+your next project.
 
 ## Implementation Characteristics
 While this is certainly a very simplified approach, we'll focus on the following two primary dimensions:
 * event-sourced vs. traditional (i.e. full state gets persisted)
 * functional vs. object-oriented
 
-We have prepared 7 variants of the Customer model for you, and most of them contain **tasks** that you will have 
+We have prepared 7 variants of the Customer model for you, and most of them contain **tasks** that you will have
 to solve. Here is how those variants map to our two dimensions:
 
 |         | ES                                    | TRAD         |
@@ -51,7 +51,7 @@ Event: **CustomerEmailAddressConfirmed** or **CustomerEmailAddressConfirmationFa
 **Rules & Policies**:
 * email addresses can only be confirmed with matching hash
 
-### Email Change 
+### Email Change
 Command: **ChangeCustomerEmailAddress** with properties
 * customerID (ID)
 * emailAddress (EmailAddress)
@@ -84,14 +84,16 @@ For each *CustomerX*:
 The production code is **missing relevant pieces of code** which you will have to fill to make
 the tests green. There are **TODO** comments which mark where code is missing. You don't have to modify test cases,
 and you don't have to modify the existing code to complete the tasks.
-Please always make the first failing test green!  
+
+Please always make the first failing test green!
+
 
 ## Setup
 The repository contains a *Gradle* build file to set up the dependencies (Junit 5.7).
 
 ## Primer
 
-The two traditional (full state gets persisted) variants are rather trivial, each of you has probably implemented 
+The two traditional (full state gets persisted) variants are rather trivial, each of you has probably implemented
 such models before. Therefore, we will just have a look at them together and discuss them. One interesting aspect
 will be how to test them.
 

@@ -9,7 +9,12 @@ namespace Domain.Functional.ES.Customer
     {
         public static CustomerRegistered Register(RegisterCustomer command)
         {
-            return null; // TODO
+            return CustomerRegistered.Build(
+                command.CustomerId,
+                command.EmailAddress,
+                command.ConfirmationHash,
+                command.Name
+            );
         }
 
         public static List<Event> ConfirmEmailAddress(List<Event> eventStream, ConfirmCustomerEmailAddress command)
@@ -21,20 +26,33 @@ namespace Domain.Functional.ES.Customer
                 switch (evt)
                 {
                     case CustomerRegistered e:
-                        // TODO
+                        confirmationHash = e.ConfirmationHash;
                         break;
                     case CustomerEmailAddressConfirmed e:
-                        // TODO
+                        isEmailAddressConfirmed = true;
                         break;
                     case CustomerEmailAddressChanged e:
-                        // TODO
+                        confirmationHash = e.ConfirmationHash;
+                        isEmailAddressConfirmed = false;
                         break;
                 }
             }
 
-            // TODO
+            if (command.ConfirmationHash != confirmationHash)
+            {
+                return new List<Event>()
+                {
+                    CustomerEmailAddressConfirmationFailed.Build(command.CustomerId)
+                };
+            }
 
-            return new List<Event>(); // TODO
+            if (isEmailAddressConfirmed)
+                return new List<Event>();
+
+            return new List<Event>
+            {
+                CustomerEmailAddressConfirmed.Build(command.CustomerId)
+            };
         }
 
         public static List<Event> ChangeEmailAddress(List<Event> eventStream, ChangeCustomerEmailAddress command)
@@ -45,17 +63,24 @@ namespace Domain.Functional.ES.Customer
                 switch (evt)
                 {
                     case CustomerRegistered e:
-                        // TODO
+                        emailAddress = e.EmailAddress;
                         break;
                     case CustomerEmailAddressChanged e:
-                        // TODO
+                        emailAddress = e.EmailAddress;
                         break;
                 }
             }
 
-            // TODO
+            if (command.EmailAddress == emailAddress)
+                return new List<Event>();
 
-            return new List<Event>(); // TODO
+            return new List<Event>()
+            {
+                CustomerEmailAddressChanged.Build(
+                    command.CustomerId,
+                    command.EmailAddress,
+                    command.ConfirmationHash)
+            };
         }
     }
 }

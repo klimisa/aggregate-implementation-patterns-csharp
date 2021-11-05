@@ -23,7 +23,12 @@ namespace Domain.OOP.ES.Customer
         {
             Customer4 customer = new Customer4();
 
-            // TODO
+            customer.RecordThat(
+                CustomerRegistered.Build(
+                    command.CustomerId,
+                    command.EmailAddress,
+                    command.ConfirmationHash,
+                    command.Name));
 
             return customer;
         }
@@ -39,12 +44,24 @@ namespace Domain.OOP.ES.Customer
 
         public void ConfirmEmailAddress(ConfirmCustomerEmailAddress command)
         {
-            // TODO
+            if (command.ConfirmationHash != confirmationHash)
+            {
+                RecordThat(CustomerEmailAddressConfirmationFailed.Build(command.CustomerId));
+                return;
+            }
+
+            if (!isEmailAddressConfirmed)
+                RecordThat(CustomerEmailAddressConfirmed.Build(command.CustomerId));
         }
 
         public void ChangeEmailAddress(ChangeCustomerEmailAddress command)
         {
-            // TODO
+            if (command.EmailAddress != emailAddress)
+                RecordThat(
+                    CustomerEmailAddressChanged.Build(
+                        command.CustomerId,
+                        command.EmailAddress,
+                        command.ConfirmationHash));
         }
 
         private void RecordThat(Event evt)
@@ -65,13 +82,17 @@ namespace Domain.OOP.ES.Customer
             switch (evt)
             {
                 case CustomerRegistered e:
-                    // TODO
+                    name = e.Name;
+                    emailAddress = e.EmailAddress;
+                    confirmationHash = e.ConfirmationHash;
                     break;
                 case CustomerEmailAddressConfirmed e:
-                    // TODO
+                    isEmailAddressConfirmed = true;
                     break;
                 case CustomerEmailAddressChanged e:
-                    // TODO
+                    emailAddress = e.EmailAddress;
+                    confirmationHash = e.ConfirmationHash;
+                    isEmailAddressConfirmed = false;
                     break;
             }
         }
